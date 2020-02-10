@@ -1,43 +1,12 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const cors = require('cors')
+const Person = require('./models/person')
 
 const morgan = require('morgan')
 //defining token for showing POST content
 morgan.token('postData', (req) => { return JSON.stringify(req.body) })
-
-let persons = [
-    {
-    "name": "Arto Hellas",
-    "number": "040-123456",
-    "id": 1
-    },
-    {
-    "name": "Ada Lovelace",
-    "number": "39-44-5323523",
-    "id": 2
-    },
-    {
-    "name": "Dan Abramov",
-    "number": "12-43-234345",
-    "id": 3
-    },
-    {
-    "name": "Mary Poppendieck",
-    "number": "39-23-6423122",
-    "id": 4
-    },
-    {
-    "name": "Test Data",
-    "number": "867-5309",
-    "id": 5
-    },
-    {
-    "name": "test",
-    "number": "data",
-    "id": 6
-    }
-]
 
 app.use(cors())
 app.use(express.json())
@@ -47,7 +16,9 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :p
 app.get('/', (req, res) => {
   res.send('<h1>Hello World!</h1>')
 })
-app.get('/info',(req, res) => {
+
+//non-functional at present, patching for 3.18
+/* app.get('/info',(req, res) => {
     const p = persons.length
     const reqTime = new Date().toLocaleString()
     const body = `
@@ -58,58 +29,64 @@ app.get('/info',(req, res) => {
      
     //use .render(html)??
     res.send(body)
-})
+}) */
 
 app.get('/api/persons', (req, res) => {
-  res.json(persons)
+  Person.find({})
+        .then(result => {
+        res.json(result.map(p => p.toJSON()))
+        })
 })
 
 app.get('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id)
-    const person = persons.find(person => person.id === id)
-
-    if (person) {
-        res.json(person)
-      } else {
-        res.status(404).end()
-      }
+    Person.findById(req.params.id)
+      .then(p => {
+        res.json(p.toJSON())
+    })
   }
 )
 
 app.delete('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id)
-    persons = persons.filter(person => person.id !== id)
-    
-    res.status(204).end()
+  Person.findById(req.params.id)
+      .then(p => {
+        p.delete().then(
+          res.status(204).end()
+        )
+    })
   }
 )
 
 app.post('/api/persons', (req, res) => {
-    app.use(morgan(':postData'))
     const person = req.body
 
-    if (!person.name || !person.number) {
+    if (person.name === undefined || person.number === undefined) {
         return res.status(400).json({ 
-          error: 'missing name or number' 
+          error: 'missing name or number!' 
         })
     }
-    if (persons.find(p => p.name === person.name)) {
-        return res.status(400).json({ //this is just copypaste atm, check if error code is right!
-            error: 'name already in phonebook' 
-          }) 
-    }
-    //add into data
-    const newPerson = {
-        "name": person.name,
-        "number": person.number,
-        "id": Math.floor(Math.random() * 100000 + 10)
-    }
-    persons = persons.concat(newPerson)
-    res.json(newPerson)
+
+    //duplicate name check before adding to DB
+    Person.find({name: person.name})
+          .then( result => {
+            if (result.length > 0) {
+              return res.status(400).json({ 
+              error: 'name already in phonebook' 
+              })
+            } else {
+              //add into data
+              const newPerson = new Person({
+                  "name": person.name,
+                  "number": person.number,
+              })
+              newPerson.save().then( saved => {
+                res.json(saved.toJSON())
+              })
+            }
+          }).catch( e => {console.log('error:', e.message)})
   }
 )
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
