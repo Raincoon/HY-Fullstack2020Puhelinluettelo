@@ -4,7 +4,6 @@ if ( process.argv.length < 3 ) {
   console.log('give password as argument')
   process.exit(1)
 }
-//Y5HCk254dZCsOKnO
 
 const password = process.argv[2]
 const name = process.argv[3] || ""
