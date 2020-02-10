@@ -1,0 +1,28 @@
+{
+  "name": "hy-fullstack2020puhelinluettelo",
+  "version": "1.0.0",
+  "description": "A repository for schoolwork",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "\"echo \\\"Error: no test specified\\\" && exit 1\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Raincoon/HY-Fullstack2020Puhelinluettelo.git"
+  },
+  "author": "Sofia Leino",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Raincoon/HY-Fullstack2020Puhelinluettelo/issues"
+  },
+  "homepage": "https://github.com/Raincoon/HY-Fullstack2020Puhelinluettelo#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "morgan": "^1.9.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
