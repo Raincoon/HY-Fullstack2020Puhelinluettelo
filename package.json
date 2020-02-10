@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
+    "build:ui": "rm -rf build && cd ../HY-Fullstack2020Assignments/Osa\\ 2/puhelinluettelo && npm run build --prod && cp -r build ../../../HY-Fullstack2020Puhelinluettelo/",
     "test": "\"echo \\\"Error: no test specified\\\" && exit 1\""
   },
   "repository": {
@@ -19,6 +20,7 @@
   },
   "homepage": "https://github.com/Raincoon/HY-Fullstack2020Puhelinluettelo#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "morgan": "^1.9.1"
   },
