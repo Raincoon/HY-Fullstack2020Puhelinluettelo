@@ -96,8 +96,10 @@ app.post('/api/persons', (req, res) => {
               newPerson.save().then( saved => {
                 res.json(saved.toJSON())
               })
+              .catch(err => next(err))
             }
           })
+          
   }
 )
 const unknownEndpoint = (req, res) => {
